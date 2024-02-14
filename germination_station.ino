@@ -47,7 +47,6 @@ void loop() {
     if (should_check_timestamp) {
         should_check_timestamp = false;
         get_timestamp();
-        print_time();
     }
 
     if (should_check_temperature) {

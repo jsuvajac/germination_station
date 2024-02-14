@@ -3,4 +3,3 @@
 
 void setup_screen();
 void print_temp();
-void print_time();
