@@ -37,9 +37,11 @@ void setup() {
 
     // pin setup
     pinMode(FAN_PIN, OUTPUT);
-    pinMode(LIGHT_PIN, OUTPUT);
+    pinMode(LIGHT_PIN_1, OUTPUT);
+    pinMode(LIGHT_PIN_2, OUTPUT);
     digitalWrite(FAN_PIN, HIGH);
-    digitalWrite(LIGHT_PIN, HIGH);
+    digitalWrite(LIGHT_PIN_1, HIGH);
+    digitalWrite(LIGHT_PIN_2, HIGH);
 }
 
 void loop() {
@@ -71,10 +73,12 @@ void loop() {
 
             // hour change
             if (current_hour >= LIGHT_START_TIME && current_hour < LIGHT_END_TIME) {
-                digitalWrite(LIGHT_PIN, LOW); // on
+                digitalWrite(LIGHT_PIN_1, LOW); // on
+                digitalWrite(LIGHT_PIN_2, LOW);
             }
             else {
-                digitalWrite(LIGHT_PIN, HIGH); 
+                digitalWrite(LIGHT_PIN_1, HIGH); 
+                digitalWrite(LIGHT_PIN_2, HIGH); 
             }
         }
 

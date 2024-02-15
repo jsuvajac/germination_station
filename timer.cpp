@@ -6,6 +6,7 @@ ESP8266_ISR_Timer ISR_Timer;
 extern bool should_check_timestamp;
 extern bool should_check_temperature;
 extern bool is_fan_on;
+extern float temp;
 
 
 void poll_time() {
@@ -21,8 +22,14 @@ void end_fan() {
     digitalWrite(FAN_PIN, HIGH);
 }
 void start_fan() {
-    digitalWrite(FAN_PIN, LOW);
-    ISR_Timer.setInterval(FAN_TIME, end_fan);
+    if (temp > 22 && temp <= 27) {
+        Serial.println("Starting fan");
+        digitalWrite(FAN_PIN, LOW);
+        ISR_Timer.setInterval(FAN_TIME, end_fan);
+    }
+    else {
+        Serial.println("Fan not starting as the temperature is out of range");
+    }
 }
 
 

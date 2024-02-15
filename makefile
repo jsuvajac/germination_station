@@ -1,8 +1,11 @@
+USB_PORT = /dev/ttyUSB0
+MCU = esp8266:esp8266:nodemcuv2
+
 compile:
-	arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2
+	arduino-cli compile --fqbn $(MCU)
 
 upload:
-	arduino-cli upload --port /dev/ttyUSB1 --fqbn esp8266:esp8266:nodemcuv2
+	arduino-cli upload --port $(USB_PORT) --fqbn $(MCU)
 
 read:
-	stty -F /dev/ttyUSB1 raw 115200; cat /dev/ttyUSB1
+	stty -F $(USB_PORT) raw 115200; cat $(USB_PORT)

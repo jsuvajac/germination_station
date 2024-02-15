@@ -44,6 +44,6 @@ void get_temperature() {
     Serial.print("% RH");
     Serial.print("    Pressure: ");
     Serial.print(pres);
-    Serial.println(" hPa");
+    Serial.println(" hPa\n");
 }
 

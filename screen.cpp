@@ -17,7 +17,7 @@ void setup_screen() {
 }
 
 void print_temp() {
-    ssd1306_clearBlock(0, 0, 128, FONT_HEIGHT * 2);
+    ssd1306_clearBlock(0, 0, FONT_WIDTH * 9, FONT_HEIGHT * 2);
 
     int x = 3 * FONT_WIDTH;
     int y = 21 * 1;

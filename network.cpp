@@ -103,8 +103,6 @@ void get_timestamp() {
         }
         Serial.println(epoch % 60); // print the second
     }
-    Serial.println("");
-    // wait ten seconds before asking for the time again
 }
 
 // send an NTP request to the time server at the given address
