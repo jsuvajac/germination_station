@@ -47,7 +47,7 @@ void setup_network() {
     print_time_start = millis();
 }
 
-bool get_timestamp() {
+bool get_timestamp_form_network() {
     // get a random server from the pool
     WiFi.hostByName(ntpServerName, timeServerIP);
 

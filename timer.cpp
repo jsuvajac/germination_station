@@ -4,7 +4,6 @@ ESP8266Timer ITimer;
 ESP8266_ISR_Timer ISR_Timer;
 
 extern unsigned int current_timestamp;
-extern unsigned int last_timestamp;
 extern bool should_check_timestamp;
 extern bool should_check_temperature;
 extern bool is_fan_on;
@@ -44,7 +43,6 @@ void start_fan() {
     }
 }
 
-
 void IRAM_ATTR TimerHandler() {
     ISR_Timer.run();
 }
@@ -62,46 +60,34 @@ void setup_timers() {
 
 }
 
+
+void update_local_time() {
+    raw_seconds = current_timestamp + (millis() - millis_at_timestamp) / 1000;
+
+    LocalTime timestamp_time = LocalTime {
+        (int) (current_timestamp % 60),
+        (int) (current_timestamp / 60) % 60,
+        (int) (current_timestamp / (60 * 60) + (24 + TIMEZONE_OFFSET_FROM_GMT)) % 24
+    };
+    last_local_time = local_time;
+    local_time = LocalTime {
+        (int) (raw_seconds % 60),
+        (int) (raw_seconds / 60) % 60,
+        (int) (raw_seconds / (60 * 60) + (24 + TIMEZONE_OFFSET_FROM_GMT)) % 24
+    };
+
+    // Serial.print(local_time.hour);
+    // Serial.print(":");
+    // Serial.print(local_time.minute);
+    // Serial.print(":");
+    // Serial.print(local_time.second);
+    // Serial.println();
+}
+
 bool tick_local_time() {
     if (millis() - print_time_current > 1000) {
         print_time_current = millis();
-
-        raw_seconds = current_timestamp + (millis() - millis_at_timestamp) / 1000;
-
-        LocalTime timestamp_time = LocalTime {
-            (int) (current_timestamp % 60),
-            (int) (current_timestamp / 60) % 60,
-            (int) (current_timestamp / (60 * 60) + (24 + TIMEZONE_OFFSET_FROM_GMT)) % 24
-        };
-        last_local_time = local_time;
-        local_time = LocalTime {
-            (int) (raw_seconds % 60),
-            (int) (raw_seconds / 60) % 60,
-            (int) (raw_seconds / (60 * 60) + (24 + TIMEZONE_OFFSET_FROM_GMT)) % 24
-        };
-
-        Serial.print(local_time.hour);
-        Serial.print(":");
-        Serial.print(local_time.minute);
-        Serial.print(":");
-        Serial.print(local_time.second);
-
-        Serial.print(" ( ");
-        Serial.print(local_time.hour - last_local_time.hour);
-        Serial.print(":");
-        Serial.print(local_time.minute - last_local_time.minute);
-        Serial.print(":");
-        Serial.print(local_time.second - last_local_time.second);
-        Serial.print(" ) ");
-
-
-        Serial.print(" ( ");
-        Serial.print(timestamp_time.hour);
-        Serial.print(":");
-        Serial.print(timestamp_time.minute);
-        Serial.print(":");
-        Serial.print(timestamp_time.second);
-        Serial.println(" )");
+        update_local_time();
 
         return true;
     }
@@ -109,10 +95,10 @@ bool tick_local_time() {
     return false;
 }
 
-bool is_top_of_hour() {
-    return (local_time.hour - last_local_time.hour);
+bool is_top_of_minute() {
+    return (local_time.minute - last_local_time.minute) != 0;
 }
 
-LocalTime get_time() {
+LocalTime get_local_time() {
     return local_time;
 }

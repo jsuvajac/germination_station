@@ -25,6 +25,7 @@ struct LocalTime {
 };
 
 
+LocalTime get_local_time();
+void update_local_time();
 bool tick_local_time();
-bool is_top_of_hour();
-LocalTime get_time();
+bool is_top_of_minute();

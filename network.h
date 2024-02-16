@@ -7,6 +7,6 @@
 
 
 void setup_network();
-bool get_timestamp();
+bool get_timestamp_form_network();
 void send_NTP_packet(IPAddress &address);
 
