@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ssid.h"
+#include "Arduino.h"
 
 #define FAN_PIN 14
 #define FAN_TIME 1000 * 60 * 3

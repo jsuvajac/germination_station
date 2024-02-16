@@ -12,7 +12,6 @@
 #include "screen.h"
 #include "temperature_sensor.h"
 
-
 float temp(NAN);
 float hum(NAN);
 float pres(NAN);
@@ -22,6 +21,7 @@ unsigned int last_timestamp = 0ul;
 
 bool should_check_timestamp = false;
 bool should_check_temperature = false;
+
 
 void setup() {
     Serial.begin(115200);
@@ -48,8 +48,7 @@ void setup() {
     Serial.println("Initial attempt to get a timestamp:");
     for (int i = 0; i < 5; i++) {
         Serial.print(".");
-        get_timestamp();
-        if (current_timestamp != 0ul)
+        if (get_timestamp())
             break;
     }
     Serial.println();
@@ -66,36 +65,27 @@ void loop() {
     if (should_check_temperature) {
         should_check_temperature = false;
         get_temperature();
-        // print_temp();
+        print_temp();
     }
 
     // update lights and fan on top of the hour
-    if (current_timestamp > last_timestamp) {
-        int last_hour = get_timestamp_hour(last_timestamp);
-        int current_hour = get_timestamp_hour(current_timestamp);
-
-        // int last_minute = get_timestamp_minute(last_timestamp);
-        // int current_minute = get_timestamp_minute(current_timestamp);
-
-        if (last_hour != current_hour) {
-            if (last_timestamp != 0ul) {
-                // don't run initially
-                start_fan();
-            }
-
-            // hour change
-            if (current_hour >= LIGHT_START_TIME && current_hour < LIGHT_END_TIME) {
-                digitalWrite(LIGHT_PIN_1, LOW); // on
-                digitalWrite(LIGHT_PIN_2, LOW);
-            }
-            else {
-                digitalWrite(LIGHT_PIN_1, HIGH); 
-                digitalWrite(LIGHT_PIN_2, HIGH); 
-            }
+    if (tick_local_time()) {
+        if (is_top_of_hour()) {
+            update_relays(get_time());
         }
-
-        last_timestamp = current_timestamp;
     }
-
-    measure_local_time();
 }
+
+void update_relays(LocalTime time) {
+    if (time.hour >= LIGHT_START_TIME && time.hour < LIGHT_END_TIME) {
+        digitalWrite(LIGHT_PIN_1, LOW); // on
+        digitalWrite(LIGHT_PIN_2, LOW);
+        digitalWrite(FAN_PIN, LOW);
+    }
+    else {
+        digitalWrite(LIGHT_PIN_1, HIGH); 
+        digitalWrite(LIGHT_PIN_2, HIGH); 
+        digitalWrite(FAN_PIN, HIGH);
+    }
+}
+

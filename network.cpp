@@ -4,7 +4,8 @@
 WiFiUDP udp;
 
 extern unsigned int current_timestamp;
-extern unsigned int last_timestamp;
+extern int print_time_start;
+extern int millis_at_timestamp;
 
 /* Don't hardwire the IP address or we won't get the benefits of the pool.
     Lookup the IP address for the host name instead */
@@ -18,13 +19,6 @@ unsigned int localPort = UDP_LOCAL_PORT; // local port to listen for UDP packets
 const char *ssid = STASSID; // your network SSID (name)
 const char *pass = STAPSK;  // your network password
 
-// timer for nudging local time approximation
-unsigned int print_time_start = 0ul;
-unsigned int print_time_current = 0ul;
-
-// local approximation
-unsigned int millis_at_timestamp = 0ul;
-unsigned long raw_seconds;
 
 void setup_network() {
     // We start by connecting to a WiFi network
@@ -91,25 +85,6 @@ bool get_timestamp() {
         // print Unix time:
         // Serial.println(epoch);
         current_timestamp = epoch;
-
-        // print the hour, minute and second:
-        Serial.print("The EST time is ");                        // UTC is the time at Greenwich Meridian (GMT)
-        Serial.print((((epoch % 86400L) / 3600) + 24 - 5) % 24); // print the hour (86400 equals secs per day) -5 ETC offset
-        Serial.print(':');
-        if (((epoch % 3600) / 60) < 10)
-        {
-            // In the first 10 minutes of each hour, we'll want a leading '0'
-            Serial.print('0');
-        }
-        Serial.print((epoch % 3600) / 60); // print the minute (3600 equals secs per minute)
-        Serial.print(':');
-        if ((epoch % 60) < 10)
-        {
-            // In the first 10 seconds of each minute, we'll want a leading '0'
-            Serial.print('0');
-        }
-        Serial.println(epoch % 60); // print the second
-
         millis_at_timestamp = millis();
     }
 
@@ -139,40 +114,3 @@ void send_NTP_packet(IPAddress &address) {
     udp.write(packetBuffer, NTP_PACKET_SIZE);
     udp.endPacket();
 }
-
-void measure_local_time() {
-    if (millis() - print_time_current > 1000) {
-        print_time_current = millis();
-
-        raw_seconds = current_timestamp + (millis() - millis_at_timestamp) / 1000;
-
-        int seconds = raw_seconds % 60;
-        int minutes = (raw_seconds / 60) % 60;
-        int hours   = (raw_seconds / (60 * 60) + (24 + TIMEZONE_OFFSET_FROM_GMT)) % 24;
-
-        Serial.print(hours);
-        Serial.print(":");
-        Serial.print(minutes);
-        Serial.print(":");
-        Serial.print(seconds);
-        Serial.print(" ( ");
-        Serial.print(get_timestamp_hour(current_timestamp));
-        Serial.print(":");
-        Serial.print(get_timestamp_minute(current_timestamp));
-        Serial.print(":");
-        Serial.print(get_timestamp_second(current_timestamp));
-        Serial.println(" )");
-    }
-}
-
-int get_timestamp_hour(unsigned long timestamp) {
-    // 86400 equals secs per day
-    return (((timestamp % (60ul * 60ul * 24ul)) / (60 * 60)) + 24 + TIMEZONE_OFFSET_FROM_GMT) % 24; 
-}
-int get_timestamp_minute(unsigned long timestamp) {
-    return (timestamp % (60 * 60)) / 60;
-}
-int get_timestamp_second(unsigned long timestamp) {
-    return timestamp % 60;
-}
-
