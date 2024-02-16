@@ -22,7 +22,7 @@ void end_fan() {
     digitalWrite(FAN_PIN, HIGH);
 }
 void start_fan() {
-    if (temp > 22 && temp <= 27) {
+    if (temp > FAN_TEMP_LOW && temp <= FAN_TEMP_HIGH) {
         Serial.println("Starting fan");
         digitalWrite(FAN_PIN, LOW);
         ISR_Timer.setInterval(FAN_TIME, end_fan);
@@ -40,7 +40,7 @@ void IRAM_ATTR TimerHandler() {
 void setup_timers() {
     if (ITimer.attachInterruptInterval(1000 * BASE_POLL_TIME, TimerHandler))
     {
-        Serial.print(F("Starting ITimer OK"));
+        Serial.println(F("Starting ITimer OK"));
     }
     else
         Serial.println(F("Can't set ITimer. Select another freq. or timer"));

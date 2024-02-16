@@ -1,5 +1,3 @@
-// #include <ESP8266WiFi.h>
-
 #include <BME280I2C.h>
 #include <Wire.h>
 
@@ -44,6 +42,6 @@ void get_temperature() {
     Serial.print("% RH");
     Serial.print("    Pressure: ");
     Serial.print(pres);
-    Serial.println(" hPa\n");
+    Serial.println(" hPa");
 }
 

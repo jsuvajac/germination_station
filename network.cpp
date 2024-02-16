@@ -18,6 +18,13 @@ unsigned int localPort = UDP_LOCAL_PORT; // local port to listen for UDP packets
 const char *ssid = STASSID; // your network SSID (name)
 const char *pass = STAPSK;  // your network password
 
+// timer for nudging local time approximation
+unsigned int print_time_start = 0ul;
+unsigned int print_time_current = 0ul;
+
+// local approximation
+unsigned int millis_at_timestamp = 0ul;
+unsigned long raw_seconds;
 
 void setup_network() {
     // We start by connecting to a WiFi network
@@ -42,9 +49,11 @@ void setup_network() {
     Serial.println(udp.localPort());
 
     Serial.println("Starting UDP");
+
+    print_time_start = millis();
 }
 
-void get_timestamp() {
+bool get_timestamp() {
     // get a random server from the pool
     WiFi.hostByName(ntpServerName, timeServerIP);
 
@@ -53,12 +62,10 @@ void get_timestamp() {
     delay(1000);
 
     int cb = udp.parsePacket();
-    if (!cb)
-    {
+    if (!cb) {
         Serial.println("no packet yet");
     }
-    else
-    {
+    else {
         // Serial.print("packet received, length=");
         // Serial.println(cb);
         // We've received a packet, read the data from it
@@ -102,7 +109,11 @@ void get_timestamp() {
             Serial.print('0');
         }
         Serial.println(epoch % 60); // print the second
+
+        millis_at_timestamp = millis();
     }
+
+    return cb;
 }
 
 // send an NTP request to the time server at the given address
@@ -127,6 +138,31 @@ void send_NTP_packet(IPAddress &address) {
     udp.beginPacket(address, 123); // NTP requests are to port 123
     udp.write(packetBuffer, NTP_PACKET_SIZE);
     udp.endPacket();
+}
+
+void measure_local_time() {
+    if (millis() - print_time_current > 1000) {
+        print_time_current = millis();
+
+        raw_seconds = current_timestamp + (millis() - millis_at_timestamp) / 1000;
+
+        int seconds = raw_seconds % 60;
+        int minutes = (raw_seconds / 60) % 60;
+        int hours   = (raw_seconds / (60 * 60) + (24 + TIMEZONE_OFFSET_FROM_GMT)) % 24;
+
+        Serial.print(hours);
+        Serial.print(":");
+        Serial.print(minutes);
+        Serial.print(":");
+        Serial.print(seconds);
+        Serial.print(" ( ");
+        Serial.print(get_timestamp_hour(current_timestamp));
+        Serial.print(":");
+        Serial.print(get_timestamp_minute(current_timestamp));
+        Serial.print(":");
+        Serial.print(get_timestamp_second(current_timestamp));
+        Serial.println(" )");
+    }
 }
 
 int get_timestamp_hour(unsigned long timestamp) {
