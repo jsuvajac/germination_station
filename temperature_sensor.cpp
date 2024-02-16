@@ -1,8 +1,16 @@
 #include <BME280I2C.h>
 #include <Wire.h>
 
-
-BME280I2C bme; 
+BME280I2C bme(BME280I2C::Settings(
+   BME280::OSR_X1,
+   BME280::OSR_X1,
+   BME280::OSR_X1,
+   BME280::Mode_Forced,
+   BME280::StandbyTime_1000ms,
+   BME280::Filter_Off,
+   BME280::SpiEnable_False,
+   BME280I2C::I2CAddr_0x76
+)); 
 
 extern float temp;
 extern float hum;
@@ -34,14 +42,14 @@ void get_temperature() {
 
     bme.read(pres, temp, hum, tempUnit, presUnit);
 
-    Serial.print("Temp: ");
-    Serial.print(temp);
-    Serial.print("°C");
-    Serial.print("    Humidity: ");
-    Serial.print(hum);
-    Serial.print("% RH");
-    Serial.print("    Pressure: ");
-    Serial.print(pres);
-    Serial.println(" hPa");
+    // Serial.print("Temp: ");
+    // Serial.print(temp);
+    // Serial.print("°C");
+    // Serial.print("    Humidity: ");
+    // Serial.print(hum);
+    // Serial.print("% RH");
+    // Serial.print("    Pressure: ");
+    // Serial.print(pres);
+    // Serial.println(" hPa");
 }
 

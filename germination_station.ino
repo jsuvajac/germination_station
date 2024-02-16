@@ -36,7 +36,7 @@ void setup() {
     // get inital sensor readings and timestamp
     Serial.println("Initial sensor reading:");
     get_temperature();
-    print_temp();
+    draw_temperature();
 
     Serial.println("Initial attempt to get a timestamp:");
     for (int i = 0; i < 5; i++) {
@@ -64,7 +64,7 @@ void loop() {
     if (should_check_temperature) {
         should_check_temperature = false;
         get_temperature();
-        print_temp();
+        draw_temperature();
     }
 
     // update lights and fan on top of the hour
@@ -78,15 +78,17 @@ void loop() {
 void update_relays() {
     LocalTime time = get_local_time();
     is_light_on = (time.hour >= LIGHT_START_TIME && time.hour < LIGHT_END_TIME);
-    is_fan_on = is_light_on ? temp > FAN_TEMP_LOW : temp > FAN_TEMP_HIGH;
+    is_fan_on = is_light_on ?
+        temp > FAN_TEMP_LOW :
+        temp > FAN_TEMP_HIGH;
 
-    Serial.print("lights: ");
-    Serial.print(is_light_on ? "ON" : "OFF");
-    Serial.println("");
+    // Serial.print("lights: ");
+    // Serial.print(is_light_on ? "ON" : "OFF");
+    // Serial.println("");
 
-    Serial.print("fan: ");
-    Serial.print(is_fan_on ? "ON" : "OFF");
-    Serial.println("");
+    // Serial.print("fan: ");
+    // Serial.print(is_fan_on ? "ON" : "OFF");
+    // Serial.println("");
 
     // NOTE: low -> relay on
     digitalWrite(LIGHT_PIN_1, !is_light_on);

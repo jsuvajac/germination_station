@@ -64,11 +64,11 @@ void setup_timers() {
 void update_local_time() {
     raw_seconds = current_timestamp + (millis() - millis_at_timestamp) / 1000;
 
-    LocalTime timestamp_time = LocalTime {
-        (int) (current_timestamp % 60),
-        (int) (current_timestamp / 60) % 60,
-        (int) (current_timestamp / (60 * 60) + (24 + TIMEZONE_OFFSET_FROM_GMT)) % 24
-    };
+    // LocalTime timestamp_time = LocalTime {
+    //     (int) (current_timestamp % 60),
+    //     (int) (current_timestamp / 60) % 60,
+    //     (int) (current_timestamp / (60 * 60) + (24 + TIMEZONE_OFFSET_FROM_GMT)) % 24
+    // };
     last_local_time = local_time;
     local_time = LocalTime {
         (int) (raw_seconds % 60),

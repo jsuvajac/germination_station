@@ -16,7 +16,7 @@ void setup_screen() {
     ssd1306_clearScreen();
 }
 
-void print_temp() {
+void draw_temperature() {
     ssd1306_clearBlock(0, 0, FONT_WIDTH * 9, FONT_HEIGHT * 2);
 
     int x = 3 * FONT_WIDTH;
